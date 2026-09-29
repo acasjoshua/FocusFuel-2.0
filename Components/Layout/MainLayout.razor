@@ -1,0 +1,30 @@
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject AppState State
+@inject NavigationManager Nav
+
+@if (State.User != null)
+{
+    <header class="topbar">
+        <div class="brand"><span class="logo">📖</span><span>FocusFuel</span></div>
+        <button class="icon-btn" title="Log out" @onclick="Logout">⎋</button>
+    </header>
+    <nav class="tabs">
+        <NavLink href="" Match="NavLinkMatch.All"><span>▦</span>Dashboard</NavLink>
+        <NavLink href="timer"><span>⏱</span>Timer</NavLink>
+        <NavLink href="goals"><span>◎</span>Goals</NavLink>
+        <NavLink href="profile"><span>👤</span>Profile</NavLink>
+    </nav>
+    <main class="content">@Body</main>
+}
+
+@code {
+    protected override void OnInitialized()
+    {
+        State.OnChange += Changed;
+        if (State.User == null) Nav.NavigateTo("login");
+    }
+    void Changed() => InvokeAsync(StateHasChanged);
+    void Logout() { State.Logout(); Nav.NavigateTo("login"); }
+    public void Dispose() => State.OnChange -= Changed;
+}
