@@ -1,0 +1,56 @@
+@page "/timer"
+@implements IDisposable
+@inject AppState S
+
+<div class="row-between">
+    <div>
+        <h1 class="page-title">Study Timer</h1>
+        <p class="muted">Sessions completed today: @S.SessionsToday</p>
+    </div>
+    <button class="btn btn-outline btn-sm" @onclick="() => settings = !settings">⚙ Settings</button>
+</div>
+
+@if (settings)
+{
+    <div class="card settings">
+        <label>Focus (min)</label><input type="number" value="@S.Minutes[0]" @onchange="e => Set(0, e)" />
+        <label>Short break (min)</label><input type="number" value="@S.Minutes[1]" @onchange="e => Set(1, e)" />
+        <label>Long break (min)</label><input type="number" value="@S.Minutes[2]" @onchange="e => Set(2, e)" />
+    </div>
+}
+
+<div class="pills">
+    <button class="pill @(S.Mode == TimerMode.Focus ? "active" : "")" @onclick="() => S.SetMode(TimerMode.Focus)">Focus</button>
+    <button class="pill @(S.Mode == TimerMode.ShortBreak ? "active" : "")" @onclick="() => S.SetMode(TimerMode.ShortBreak)">Short Break</button>
+    <button class="pill @(S.Mode == TimerMode.LongBreak ? "active" : "")" @onclick="() => S.SetMode(TimerMode.LongBreak)">Long Break</button>
+</div>
+
+<div class="card timer-card">
+    <div class="logo logo-lg">@(S.Running ? "⏸" : "▷")</div>
+    <h2>@(S.Mode == TimerMode.Focus ? "Focus Time" : S.Mode == TimerMode.ShortBreak ? "Short Break" : "Long Break")</h2>
+    <p class="muted">@(S.Mode == TimerMode.Focus ? "Stay concentrated and avoid distractions" : "Rest your mind and recharge")</p>
+    <div class="clock">@($"{S.Remaining / 60:00}:{S.Remaining % 60:00}")</div>
+    <ProgressBar Value="S.Total - S.Remaining" Max="S.Total" />
+    <div class="btn-row">
+        <button class="btn btn-primary btn-sm" @onclick="S.Toggle">@(S.Running ? "Pause" : "▷ Start")</button>
+        <button class="btn btn-outline btn-sm" @onclick="S.Reset">Reset</button>
+    </div>
+</div>
+
+<div class="card tips">
+    <div class="card-head"><span>Productivity Tips</span></div>
+    <ul>
+        <li>Put your phone on silent or in another room</li>
+        <li>Close unnecessary browser tabs and applications</li>
+        <li>Have water and snacks nearby before starting</li>
+        <li>Use break time to stretch and move around</li>
+    </ul>
+</div>
+
+@code {
+    bool settings;
+    protected override void OnInitialized() => S.OnChange += Changed;
+    void Changed() => InvokeAsync(StateHasChanged);
+    void Set(int idx, ChangeEventArgs e) { if (int.TryParse(e.Value?.ToString(), out var v)) S.SetMinutes(idx, v); }
+    public void Dispose() => S.OnChange -= Changed;
+}
