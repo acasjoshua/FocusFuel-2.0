@@ -1,0 +1,48 @@
+@page "/profile"
+@inject AppState S
+
+@if (S.User != null)
+{
+    var days = S.LastDays(30);
+    var labels = Enumerable.Range(0, 30).Select(i => i % 5 == 0 ? DateTime.Today.AddDays(i - 29).ToString("MMM d") : "").ToArray();
+    var patterns = new[] { ("Morning (6-12)", "yellow", S.SessionsBetween(6, 12)), ("Afternoon (12-18)", "blue", S.SessionsBetween(12, 18)),
+                           ("Evening (18-24)", "purple", S.SessionsBetween(18, 24)), ("Night (0-6)", "green", S.SessionsBetween(0, 6)) };
+    <div class="profile-head">
+        <div class="avatar">@S.User.Name[0]</div>
+        <div>
+            <h1 class="page-title">@S.User.Name</h1>
+            <p class="muted">@S.User.Id<br />Member for @((DateTime.Today - S.User.Joined).Days) days</p>
+        </div>
+    </div>
+    <div class="profile-grid">
+        <div class="stack">
+            <div class="card"><div class="card-head"><span>Total Study Time</span><span class="ico blue">◷</span></div><div class="big">@(S.TotalMinutes / 60)h @(S.TotalMinutes % 60)m</div><small class="muted">Across @S.SessionCount sessions</small></div>
+            <div class="card"><div class="card-head"><span>Current Streak</span><span class="ico orange">🔥</span></div><div class="big">@S.Streak days</div><small class="muted">Keep it going! 🔥</small></div>
+            <div class="card"><div class="card-head"><span>Avg. Session</span><span class="ico green">●</span></div><div class="big">@S.AvgSession min</div><small class="muted">Per study session</small></div>
+            <div class="card"><div class="card-head"><span>Focus Rate</span><span class="ico purple">↘</span></div><div class="big">@S.FocusRate%</div><small class="muted">Uninterrupted sessions</small></div>
+        </div>
+        <div class="stack">
+            <div class="two-col">
+                <div class="card"><div class="card-head"><span>30-Day Study Activity</span></div><p class="muted">Your daily study minutes over the last month</p><BarChart Values="days" Labels="labels" /></div>
+                <div class="card"><div class="card-head"><span>Study Patterns</span></div><p class="muted">When you study most</p>
+                    <div class="legend">@foreach (var p in patterns) { <div class="row-between"><span><i class="dot @p.Item2"></i>@p.Item1</span><small class="muted">@p.Item3 sessions</small></div> }</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-head"><span>🏆 Achievements (@S.Achievements.Count(a => a.Unlocked))</span></div>
+                <p class="muted">Your unlocked badges and milestones</p>
+                @if (S.Achievements.Any(a => a.Unlocked))
+                {
+                    <div class="badges">@foreach (var a in S.Achievements.Where(a => a.Unlocked)) { <div class="badge-card"><strong>🏅 @a.Name</strong><small class="muted">@a.Desc</small></div> }</div>
+                }
+                else { <div class="empty"><span>🏅</span>Start studying to unlock achievements!</div> }
+            </div>
+            <div class="card">
+                <div class="card-head"><span>Recent Sessions</span></div>
+                <p class="muted">Your latest study sessions</p>
+                @if (S.SessionCount == 0) { <div class="empty"><span>📅</span>No study sessions yet. Start your first timer!</div> }
+                else { @foreach (var s in S.User.Sessions.OrderByDescending(x => x.Start).Take(5)) { <div class="row-between session"><span>@s.Start.ToString("MMM d, h:mm tt")</span><small class="muted">@s.Minutes min</small></div> } }
+            </div>
+        </div>
+    </div>
+}
