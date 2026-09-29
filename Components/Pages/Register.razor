@@ -1,0 +1,32 @@
+@page "/register"
+@layout AuthLayout
+@inject AppState State
+@inject NavigationManager Nav
+
+<div class="auth-card">
+    <div class="logo logo-lg">📖</div>
+    <h1>Create Account</h1>
+    <p class="muted">Join FocusFuel and boost your productivity</p>
+    <label>Full Name</label>
+    <input @bind="name" placeholder="John Doe" />
+    <label>Email or Student ID</label>
+    <input @bind="id" placeholder="student@university.edu" />
+    <label>Password</label>
+    <input type="password" @bind="pw" placeholder="Create a secure password" />
+    <label>Daily Study Goal (minutes)</label>
+    <input type="number" @bind="goal" />
+    <small class="muted">Recommended: 60-180 minutes per day</small>
+    @if (error != null) { <p class="error">@error</p> }
+    <button class="btn btn-primary" @onclick="Submit">Create Account</button>
+    <p class="auth-foot">Already have an account? <a href="login">Login here</a></p>
+</div>
+
+@code {
+    string name = "", id = "", pw = "", error;
+    int goal = 120;
+    void Submit()
+    {
+        error = State.Register(name, id, pw, goal);
+        if (error == null) Nav.NavigateTo("");
+    }
+}

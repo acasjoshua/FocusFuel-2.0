@@ -1,0 +1,26 @@
+@page "/login"
+@layout AuthLayout
+@inject AppState State
+@inject NavigationManager Nav
+
+<div class="auth-card">
+    <div class="logo logo-lg">📖</div>
+    <h1>FocusFuel</h1>
+    <p class="muted">Stay focused, build better study habits</p>
+    <label>Email or Student ID</label>
+    <input @bind="id" placeholder="student@university.edu" />
+    <label>Password</label>
+    <input type="password" @bind="pw" placeholder="Enter your password" />
+    @if (error != null) { <p class="error">@error</p> }
+    <button class="btn btn-primary" @onclick="Submit">Login</button>
+    <p class="auth-foot">Don't have an account? <a href="register">Register here</a></p>
+</div>
+
+@code {
+    string id = "", pw = "", error;
+    void Submit()
+    {
+        error = State.Login(id, pw);
+        if (error == null) Nav.NavigateTo("");
+    }
+}
