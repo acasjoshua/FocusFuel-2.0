@@ -1,0 +1,50 @@
+@page "/"
+@page "/dashboard"
+@inject AppState S
+@inject NavigationManager Nav
+
+@if (S.User != null)
+{
+    var days = S.LastDays(7);
+    var labels = Enumerable.Range(0, 7).Select(i => DateTime.Today.AddDays(i - 6).ToString("ddd")).ToArray();
+    <h1 class="page-title">Welcome back, @S.User.Name! 👋</h1>
+    <p class="muted">Let's make today productive!</p>
+    <div class="dash-grid">
+        <div class="stack">
+            <div class="card">
+                <div class="card-head"><span>Today's Progress</span><span class="ico blue">◎</span></div>
+                <div class="big">@S.TodayMinutes min</div>
+                <ProgressBar Value="S.TodayMinutes" Max="S.User.DailyGoal" />
+                <small class="muted">Goal: @S.User.DailyGoal min (@(S.TodayMinutes * 100 / S.User.DailyGoal)%)</small>
+            </div>
+            <div class="card">
+                <div class="card-head"><span>Current Streak</span><span class="ico orange">🔥</span></div>
+                <div class="big">@S.Streak days</div>
+                <small class="muted">Keep it going! 🔥</small>
+            </div>
+            <div class="card">
+                <div class="card-head"><span>Total Study Time</span><span class="ico green">◷</span></div>
+                <div class="big">@(S.TotalMinutes / 60)h @(S.TotalMinutes % 60)m</div>
+                <small class="muted">@S.SessionCount sessions completed</small>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-head"><span>7-Day Activity</span></div>
+            <p class="muted">Your study time over the last week</p>
+            <BarChart Values="days" Labels="labels" />
+        </div>
+        <div class="stack">
+            <div class="card">
+                <div class="card-head"><span>Achievements</span><span class="ico gold">🏆</span></div>
+                <div class="big">@S.Achievements.Count(a => a.Unlocked)</div>
+                <small class="muted">Badges unlocked 🏆</small>
+            </div>
+            <div class="card">
+                <div class="card-head"><span>Quick Start</span></div>
+                <button class="btn btn-primary" @onclick='() => Nav.NavigateTo("timer")'>▷ Start Study Session</button>
+                <button class="btn btn-outline" @onclick='() => Nav.NavigateTo("goals")'>◎ Manage Goals</button>
+                <button class="btn btn-outline" @onclick='() => Nav.NavigateTo("profile")'>↗ View Full Stats</button>
+            </div>
+        </div>
+    </div>
+}
