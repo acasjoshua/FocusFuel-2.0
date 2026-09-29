@@ -1,0 +1,38 @@
+/* dashboard */
+.dash-grid{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:20px;margin-top:20px;align-items:start}
+/* timer */
+.row-start{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.pills{display:flex;gap:8px;margin:18px 0}
+.pill{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 14px;font:inherit;font-size:12px;cursor:pointer}
+.pill.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.timer-card{max-width:380px;text-align:center;display:grid;justify-items:center;gap:6px;padding:24px}
+.timer-card .bar{width:100%}
+.clock{font-family:"Courier New",monospace;font-size:52px;margin:8px 0}
+.btn-row{display:flex;gap:8px;margin-top:8px}
+.tips{margin-top:20px}
+.tips ul{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+.tips li::before{content:"✓";color:var(--green);border:1px solid var(--green);border-radius:50%;padding:0 4px;margin-right:10px;font-size:10px}
+.settings{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+/* goals */
+.goals-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:20px;margin:20px 0}
+.edit-goal{display:flex;gap:8px;align-items:center}.edit-goal input{width:90px}
+.day{padding:8px 10px;border-radius:8px;margin-bottom:6px}
+.day.today{background:#eef3ff}
+.badge{font-style:normal;background:var(--blue);color:#fff;font-size:10px;padding:1px 6px;border-radius:6px;margin-left:6px}
+.insight{background:#eef3ff;color:#1e3a8a;padding:10px 12px;border-radius:8px;font-size:12px;max-width:340px}
+/* profile */
+.profile-head{display:flex;gap:16px;align-items:center;margin-bottom:20px}
+.avatar{width:60px;height:60px;border-radius:50%;background:var(--grad);color:#fff;display:grid;place-items:center;font-size:24px}
+.profile-grid{display:grid;grid-template-columns:240px 1fr;gap:20px;align-items:start}
+.two-col{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+.legend{display:grid;gap:8px;margin-top:100px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px}
+.dot.yellow{background:var(--yellow)}.dot.blue{background:var(--blue)}.dot.purple{background:var(--purple)}.dot.green{background:var(--green)}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.badge-card{background:#f8f7ff;border-radius:8px;padding:10px;display:grid;gap:4px}
+.session{padding:8px 0;border-bottom:1px solid var(--line)}
+
+@media (max-width:900px){
+  .dash-grid,.goals-grid,.profile-grid,.two-col,.settings{grid-template-columns:1fr}
+  .content{padding:16px}
+}
