@@ -1,0 +1,74 @@
+@page "/goals"
+@inject AppState S
+
+@if (S.User != null)
+{
+    var weekly = S.User.DailyGoal * 7;
+    var monthly = S.User.DailyGoal * DateTime.DaysInMonth(DateTime.Today.Year, DateTime.Today.Month);
+    <div class="row-start">
+        <div>
+            <h1 class="page-title">Study Goals</h1>
+            <p class="muted">Track your progress and adjust your targets</p>
+        </div>
+        @if (editing)
+        {
+            <div class="edit-goal">
+                <input type="number" @bind="newGoal" />
+                <button class="btn btn-primary btn-sm" @onclick="Save">Save</button>
+            </div>
+        }
+        else
+        {
+            <button class="btn btn-primary btn-sm" @onclick="StartEdit">✎ Edit Goals</button>
+        }
+    </div>
+    <div class="goals-grid">
+        <div class="stack">
+            <div class="card">
+                <div class="card-head"><span>Daily Goal</span><span class="ico blue">◎</span></div>
+                <div class="big">@S.TodayMinutes / @S.User.DailyGoal min</div>
+                <ProgressBar Value="S.TodayMinutes" Max="S.User.DailyGoal" />
+                <small class="muted">@(S.TodayMinutes * 100 / S.User.DailyGoal)% complete</small>
+            </div>
+            <div class="card">
+                <div class="card-head"><span>Weekly Goal</span><span class="ico green">▭</span></div>
+                <div class="big">@S.WeekMinutes / @weekly min</div>
+                <ProgressBar Value="S.WeekMinutes" Max="weekly" />
+                <small class="muted">@(S.WeekMinutes * 100 / weekly)% complete</small>
+            </div>
+            <div class="card">
+                <div class="card-head"><span>Monthly Progress</span><span class="ico purple">↗</span></div>
+                <div class="big">@S.MonthMinutes / @monthly min</div>
+                <ProgressBar Value="S.MonthMinutes" Max="monthly" />
+                <small class="muted">@(S.MonthMinutes * 100 / monthly)% of target</small>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-head"><span>This Week's Breakdown</span></div>
+            <p class="muted">Daily progress for the current week</p>
+            @for (var i = 0; i < 7; i++)
+            {
+                var d = S.WeekStart.AddDays(i);
+                var m = S.MinutesOn(d);
+                <div class="day @(d == DateTime.Today ? "today" : "")">
+                    <div class="row-between"><span>@d.DayOfWeek @if (d == DateTime.Today) { <em class="badge">Today</em> }</span><small class="muted">@m min</small></div>
+                    <ProgressBar Value="m" Max="S.User.DailyGoal" />
+                </div>
+            }
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-head"><span>Insights &amp; Recommendations</span></div>
+        <div class="insight">
+            @(S.SessionCount == 0 ? "💡 Start your first study session today to build momentum!"
+              : S.TodayMinutes >= S.User.DailyGoal ? "🎉 You hit today's goal. Nice work!"
+              : $"💡 {S.User.DailyGoal - S.TodayMinutes} more minutes to reach today's goal.")
+        </div>
+    </div>
+}
+
+@code {
+    bool editing; int newGoal;
+    void StartEdit() { newGoal = S.User!.DailyGoal; editing = true; }
+    void Save() { S.User!.DailyGoal = Math.Clamp(newGoal, 10, 600); editing = false; }
+}
