@@ -1,0 +1,6 @@
+<div class="bar"><div style="width:@(Pct)%"></div></div>
+@code {
+    [Parameter] public int Value { get; set; }
+    [Parameter] public int Max { get; set; }
+    int Pct => Max <= 0 ? 0 : Math.Min(100, Value * 100 / Max);
+}

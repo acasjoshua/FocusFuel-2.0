@@ -1,0 +1,14 @@
+<div class="chart">
+    <div class="chart-bars">
+        @for (var i = 0; i < Values.Length; i++)
+        {
+            <div class="chart-col"><div class="chart-bar" style="height:@(Height(Values[i]))%" title="@Values[i] min"></div></div>
+        }
+    </div>
+    <div class="chart-labels">@foreach (var l in Labels) { <span>@l</span> }</div>
+</div>
+@code {
+    [Parameter] public int[] Values { get; set; } = Array.Empty<int>();
+    [Parameter] public string[] Labels { get; set; } = Array.Empty<string>();
+    int Height(int v) => Values.Max() == 0 ? 0 : v * 100 / Values.Max();
+}
