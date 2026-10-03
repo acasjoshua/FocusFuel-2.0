@@ -3,27 +3,35 @@
 @inject AppState State
 @inject NavigationManager Nav
 
-<div class="auth-card">
-    <div class="logo logo-lg">📖</div>
-    <h1>Create Account</h1>
+<div class="card w-full max-w-[340px] px-7 py-8 text-center">
+    <div class="logo logo-lg mx-auto mb-3">📖</div>
+    <h1 class="text-[26px]">Create Account</h1>
     <p class="muted">Join FocusFuel and boost your productivity</p>
-    <label>Full Name</label>
-    <input @bind="name" placeholder="John Doe" />
-    <label>Email or Student ID</label>
-    <input @bind="id" placeholder="student@university.edu" />
-    <label>Password</label>
-    <input type="password" @bind="pw" placeholder="Create a secure password" />
-    <label>Daily Study Goal (minutes)</label>
-    <input type="number" @bind="goal" />
-    <small class="muted">Recommended: 60-180 minutes per day</small>
-    @if (error != null) { <p class="error">@error</p> }
-    <button class="btn btn-primary" @onclick="Submit">Create Account</button>
-    <p class="auth-foot">Already have an account? <a href="login">Login here</a></p>
+    <div class="text-left">
+        <label class="label">Full Name</label>
+        <input class="field" @bind="name" placeholder="John Doe" />
+        <label class="label">Email or Student ID</label>
+        <input class="field" @bind="id" placeholder="student@university.edu" />
+        <label class="label">Password</label>
+        <input class="field" type="password" @bind="pw" placeholder="Create a secure password" />
+        <label class="label">Daily Study Goal (minutes)</label>
+        <input class="field" type="number" @bind="goal" />
+        <small class="mt-1.5 block text-[11px] text-muted">Recommended: 60-180 minutes per day</small>
+        @if (error != null) { <p class="error">@error</p> }
+    </div>
+    <button class="btn btn-primary mt-[18px]" @onclick="Submit">Create Account</button>
+    <p class="mt-5 text-xs text-muted">Already have an account? <a href="login">Login here</a></p>
 </div>
 
 @code {
-    string name = "", id = "", pw = "", error;
+    string name = "", id = "", pw = "";
+    string? error;
     int goal = 120;
+    protected override async Task OnInitializedAsync()
+    {
+        await State.EnsureLoadedAsync();
+        if (State.User != null) Nav.NavigateTo("");
+    }
     void Submit()
     {
         error = State.Register(name, id, pw, goal);

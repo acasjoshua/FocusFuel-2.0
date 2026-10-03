@@ -3,21 +3,30 @@
 @inject AppState State
 @inject NavigationManager Nav
 
-<div class="auth-card">
-    <div class="logo logo-lg">📖</div>
-    <h1>FocusFuel</h1>
+<div class="card w-full max-w-[340px] px-7 py-8 text-center">
+    <div class="logo logo-lg mx-auto mb-3">📖</div>
+    <h1 class="text-[26px]">FocusFuel</h1>
     <p class="muted">Stay focused, build better study habits</p>
-    <label>Email or Student ID</label>
-    <input @bind="id" placeholder="student@university.edu" />
-    <label>Password</label>
-    <input type="password" @bind="pw" placeholder="Enter your password" />
-    @if (error != null) { <p class="error">@error</p> }
-    <button class="btn btn-primary" @onclick="Submit">Login</button>
-    <p class="auth-foot">Don't have an account? <a href="register">Register here</a></p>
+    <div class="text-left">
+        <label class="label">Email or Student ID</label>
+        <input class="field" @bind="id" placeholder="student@university.edu" />
+        <label class="label">Password</label>
+        <input class="field" type="password" @bind="pw" @onkeydown="OnKey" placeholder="Enter your password" />
+        @if (error != null) { <p class="error">@error</p> }
+    </div>
+    <button class="btn btn-primary mt-[18px]" @onclick="Submit">Login</button>
+    <p class="mt-5 text-xs text-muted">Don't have an account? <a href="register">Register here</a></p>
 </div>
 
 @code {
-    string id = "", pw = "", error;
+    string id = "", pw = "";
+    string? error;
+    protected override async Task OnInitializedAsync()
+    {
+        await State.EnsureLoadedAsync();
+        if (State.User != null) Nav.NavigateTo("");
+    }
+    void OnKey(KeyboardEventArgs e) { if (e.Key == "Enter") Submit(); }
     void Submit()
     {
         error = State.Login(id, pw);

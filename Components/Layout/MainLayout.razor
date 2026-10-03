@@ -5,23 +5,28 @@
 
 @if (State.User != null)
 {
-    <header class="topbar">
-        <div class="brand"><span class="logo">📖</span><span>FocusFuel</span></div>
-        <button class="icon-btn" title="Log out" @onclick="Logout">⎋</button>
+    <header class="flex items-center justify-between bg-white px-6 pb-1 pt-3">
+        <div class="flex items-center gap-2.5 text-[17px] font-semibold"><span class="logo">📖</span><span>FocusFuel</span></div>
+        <button class="h-8 w-9 cursor-pointer rounded-lg border border-line bg-white text-[15px]" title="Log out" @onclick="Logout">⎋</button>
     </header>
-    <nav class="tabs">
-        <NavLink href="" Match="NavLinkMatch.All"><span>▦</span>Dashboard</NavLink>
-        <NavLink href="timer"><span>⏱</span>Timer</NavLink>
-        <NavLink href="goals"><span>◎</span>Goals</NavLink>
-        <NavLink href="profile"><span>👤</span>Profile</NavLink>
+    <nav class="flex justify-between overflow-x-auto border-b border-line bg-white px-6 pb-2.5 pt-1.5">
+        <NavLink href="" Match="NavLinkMatch.All" class="@tab" ActiveClass="bg-[#ececf0]"><span>▦</span>Dashboard</NavLink>
+        <NavLink href="timer" class="@tab" ActiveClass="bg-[#ececf0]"><span>⏱</span>Timer</NavLink>
+        <NavLink href="tasks" class="@tab" ActiveClass="bg-[#ececf0]"><span>☑</span>Tasks</NavLink>
+        <NavLink href="goals" class="@tab" ActiveClass="bg-[#ececf0]"><span>◎</span>Goals</NavLink>
+        <NavLink href="profile" class="@tab" ActiveClass="bg-[#ececf0]"><span>👤</span>Profile</NavLink>
+        <NavLink href="settings" class="@tab" ActiveClass="bg-[#ececf0]"><span>⚙</span>Settings</NavLink>
     </nav>
-    <main class="content">@Body</main>
+    <main class="mx-auto max-w-[1200px] p-4 md:p-6">@Body</main>
 }
 
 @code {
-    protected override void OnInitialized()
+    const string tab = "flex flex-col items-center gap-0.5 rounded-lg px-3 py-1.5 text-[11px] text-ink";
+
+    protected override async Task OnInitializedAsync()
     {
         State.OnChange += Changed;
+        await State.EnsureLoadedAsync();
         if (State.User == null) Nav.NavigateTo("login");
     }
     void Changed() => InvokeAsync(StateHasChanged);

@@ -1,11 +1,13 @@
-<div class="chart">
-    <div class="chart-bars">
+<div class="mt-3.5">
+    <div class="flex h-[200px] items-end gap-1 border-b border-l border-gray-400 bg-[repeating-linear-gradient(to_top,transparent_0_49px,#e5e7eb_49px_50px)] px-1">
         @for (var i = 0; i < Values.Length; i++)
         {
-            <div class="chart-col"><div class="chart-bar" style="height:@(Height(Values[i]))%" title="@Values[i] min"></div></div>
+            <div class="flex h-full flex-1 items-end">
+                <div class="min-h-[2px] w-full rounded-t bg-blue-500" style="height:@(Height(Values[i]))%" title="@Values[i] min"></div>
+            </div>
         }
     </div>
-    <div class="chart-labels">@foreach (var l in Labels) { <span>@l</span> }</div>
+    <div class="mt-1.5 flex justify-between text-[10px] text-muted">@foreach (var l in Labels) { <span>@l</span> }</div>
 </div>
 @code {
     [Parameter] public int[] Values { get; set; } = Array.Empty<int>();

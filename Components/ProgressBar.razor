@@ -1,4 +1,6 @@
-<div class="bar"><div style="width:@(Pct)%"></div></div>
+<div class="my-1 mb-2 h-2 w-full overflow-hidden rounded-full bg-gray-300">
+    <div class="h-full rounded-full bg-primary transition-[width] duration-300" style="width:@(Pct)%"></div>
+</div>
 @code {
     [Parameter] public int Value { get; set; }
     [Parameter] public int Max { get; set; }
