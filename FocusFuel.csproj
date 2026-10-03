@@ -4,4 +4,9 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+
+  <!-- Rebuild Tailwind CSS on build when `npm install` has been run (the compiled wwwroot/css/app.css is also committed) -->
+  <Target Name="TailwindBuild" BeforeTargets="Build" Condition="Exists('node_modules')">
+    <Exec Command="npm run css:build" />
+  </Target>
 </Project>
