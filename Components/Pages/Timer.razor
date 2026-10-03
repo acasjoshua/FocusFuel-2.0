@@ -2,9 +2,9 @@
 @implements IDisposable
 @inject AppState S
 
-<div class="row-between">
+<div class="flex items-start justify-between gap-3">
     <div>
-        <h1 class="page-title">Study Timer</h1>
+        <h1 class="text-[26px]">Study Timer</h1>
         <p class="muted">Sessions completed today: @S.SessionsToday</p>
     </div>
     <button class="btn btn-outline btn-sm" @onclick="() => settings = !settings">⚙ Settings</button>
@@ -12,43 +12,50 @@
 
 @if (settings)
 {
-    <div class="card settings">
-        <label>Focus (min)</label><input type="number" value="@S.Minutes[0]" @onchange="e => Set(0, e)" />
-        <label>Short break (min)</label><input type="number" value="@S.Minutes[1]" @onchange="e => Set(1, e)" />
-        <label>Long break (min)</label><input type="number" value="@S.Minutes[2]" @onchange="e => Set(2, e)" />
+    <div class="card my-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+        <div><label class="label !mt-0">Focus (min)</label><input class="field" type="number" value="@S.Minutes[0]" @onchange="e => Set(0, e)" /></div>
+        <div><label class="label !mt-0">Short break (min)</label><input class="field" type="number" value="@S.Minutes[1]" @onchange="e => Set(1, e)" /></div>
+        <div><label class="label !mt-0">Long break (min)</label><input class="field" type="number" value="@S.Minutes[2]" @onchange="e => Set(2, e)" /></div>
     </div>
 }
 
-<div class="pills">
-    <button class="pill @(S.Mode == TimerMode.Focus ? "active" : "")" @onclick="() => S.SetMode(TimerMode.Focus)">Focus</button>
-    <button class="pill @(S.Mode == TimerMode.ShortBreak ? "active" : "")" @onclick="() => S.SetMode(TimerMode.ShortBreak)">Short Break</button>
-    <button class="pill @(S.Mode == TimerMode.LongBreak ? "active" : "")" @onclick="() => S.SetMode(TimerMode.LongBreak)">Long Break</button>
+<div class="my-[18px] flex gap-2">
+    <button class="pill @(S.Mode == TimerMode.Focus ? "pill-active" : "")" @onclick="() => S.SetMode(TimerMode.Focus)">Focus</button>
+    <button class="pill @(S.Mode == TimerMode.ShortBreak ? "pill-active" : "")" @onclick="() => S.SetMode(TimerMode.ShortBreak)">Short Break</button>
+    <button class="pill @(S.Mode == TimerMode.LongBreak ? "pill-active" : "")" @onclick="() => S.SetMode(TimerMode.LongBreak)">Long Break</button>
 </div>
 
-<div class="card timer-card">
+<div class="card grid max-w-[380px] justify-items-center gap-1.5 p-6 text-center">
     <div class="logo logo-lg">@(S.Running ? "⏸" : "▷")</div>
-    <h2>@(S.Mode == TimerMode.Focus ? "Focus Time" : S.Mode == TimerMode.ShortBreak ? "Short Break" : "Long Break")</h2>
+    <h2 class="text-lg">@(S.Mode == TimerMode.Focus ? "Focus Time" : S.Mode == TimerMode.ShortBreak ? "Short Break" : "Long Break")</h2>
     <p class="muted">@(S.Mode == TimerMode.Focus ? "Stay concentrated and avoid distractions" : "Rest your mind and recharge")</p>
-    <div class="clock">@($"{S.Remaining / 60:00}:{S.Remaining % 60:00}")</div>
+    <div class="my-2 font-mono text-[52px]">@($"{S.Remaining / 60:00}:{S.Remaining % 60:00}")</div>
     <ProgressBar Value="S.Total - S.Remaining" Max="S.Total" />
-    <div class="btn-row">
+    <div class="mt-2 flex gap-2">
         <button class="btn btn-primary btn-sm" @onclick="S.Toggle">@(S.Running ? "Pause" : "▷ Start")</button>
         <button class="btn btn-outline btn-sm" @onclick="S.Reset">Reset</button>
     </div>
 </div>
 
-<div class="card tips">
+<div class="card mt-5">
     <div class="card-head"><span>Productivity Tips</span></div>
-    <ul>
-        <li>Put your phone on silent or in another room</li>
-        <li>Close unnecessary browser tabs and applications</li>
-        <li>Have water and snacks nearby before starting</li>
-        <li>Use break time to stretch and move around</li>
+    <ul class="m-0 grid list-none gap-3 p-0">
+        @foreach (var tip in tips)
+        {
+            <li class="flex items-center gap-2.5"><span class="rounded-full border border-green-500 px-1 text-[10px] text-green-500">✓</span>@tip</li>
+        }
     </ul>
 </div>
 
 @code {
     bool settings;
+    static readonly string[] tips =
+    {
+        "Put your phone on silent or in another room",
+        "Close unnecessary browser tabs and applications",
+        "Have water and snacks nearby before starting",
+        "Use break time to stretch and move around",
+    };
     protected override void OnInitialized() => S.OnChange += Changed;
     void Changed() => InvokeAsync(StateHasChanged);
     void Set(int idx, ChangeEventArgs e) { if (int.TryParse(e.Value?.ToString(), out var v)) S.SetMinutes(idx, v); }
