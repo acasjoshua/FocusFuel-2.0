@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body { @apply min-h-screen bg-fixed bg-gradient-to-br from-[#eef3ff] to-[#f7f2ff] font-sans text-sm text-ink; }
+  h1, h2 { @apply font-medium; }
+  a { @apply text-link no-underline; }
+}
+
+/* Reusable building blocks, composed from Tailwind utilities */
+@layer components {
+  .logo { @apply grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-[#4f7cff] to-[#9b30ff] text-xl text-white; }
+  .logo-lg { @apply h-12 w-12 text-2xl; }
+  .card { @apply rounded-xl border border-black/5 bg-white px-5 py-[18px]; }
+  .card-head { @apply mb-3.5 flex items-center justify-between text-[13px] font-medium; }
+  .big { @apply my-2 text-2xl; }
+  .muted { @apply mt-1 text-muted; }
+  .btn { @apply mt-2 block w-full cursor-pointer rounded-lg border border-line px-3.5 py-2.5 text-[13px] hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500; }
+  .btn-primary { @apply border-primary bg-primary text-white; }
+  .btn-outline { @apply bg-white text-ink; }
+  .btn-danger { @apply border-red-200 bg-white text-red-600; }
+  .btn-sm { @apply mt-0 inline-block w-auto px-3.5 py-2; }
+  .field { @apply w-full rounded-lg border-0 bg-field px-3 py-2.5 text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500; }
+  .label { @apply mb-1.5 mt-3.5 block text-xs font-medium; }
+  .error { @apply mt-2 text-xs text-red-600; }
+  .pill { @apply cursor-pointer rounded-lg border border-line bg-white px-3.5 py-[7px] text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500; }
+  .pill-active { @apply border-primary bg-primary text-white; }
+  .empty { @apply grid justify-items-center gap-2.5 py-7 text-center text-muted; }
+}

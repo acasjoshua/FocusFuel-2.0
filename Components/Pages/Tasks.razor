@@ -1,0 +1,51 @@
+@page "/tasks"
+@inject AppState S
+
+@if (S.User != null)
+{
+    var all = S.User.Tasks;
+    var shown = all.Where(t => filter == "all" || (filter == "done" ? t.Done : !t.Done)).ToList();
+    var done = all.Count(t => t.Done);
+    <h1 class="text-[26px]">Study Tasks</h1>
+    <p class="muted">Plan what to study, then check it off</p>
+
+    <div class="card mt-5 max-w-[640px]">
+        <div class="flex gap-2">
+            <input class="field" @bind="title" @bind:event="oninput" @onkeydown="OnKey" placeholder="e.g. Read chapter 4 of Biology" />
+            <button class="btn btn-primary btn-sm" @onclick="Add">Add</button>
+        </div>
+        <div class="mt-4 flex items-center justify-between">
+            <div class="flex gap-2">
+                <button class="pill @(filter == "all" ? "pill-active" : "")" @onclick='() => filter = "all"'>All (@all.Count)</button>
+                <button class="pill @(filter == "active" ? "pill-active" : "")" @onclick='() => filter = "active"'>Active (@(all.Count - done))</button>
+                <button class="pill @(filter == "done" ? "pill-active" : "")" @onclick='() => filter = "done"'>Done (@done)</button>
+            </div>
+            @if (done > 0) { <button class="text-xs text-muted underline" @onclick="S.ClearCompletedTasks">Clear completed</button> }
+        </div>
+        @if (all.Count > 0) { <div class="mt-3"><ProgressBar Value="done" Max="all.Count" /></div> }
+
+        @if (shown.Count == 0)
+        {
+            <div class="empty"><span class="text-[34px]">☑</span>@(all.Count == 0 ? "No tasks yet. Add your first one above!" : "Nothing in this view.")</div>
+        }
+        else
+        {
+            <ul class="m-0 mt-2 list-none p-0">
+                @foreach (var t in shown)
+                {
+                    <li class="flex items-center gap-3 border-b border-line py-2.5">
+                        <input type="checkbox" class="h-4 w-4 cursor-pointer accent-primary" checked="@t.Done" @onchange="() => S.ToggleTask(t)" />
+                        <span class="flex-1 @(t.Done ? "text-muted line-through" : "")">@t.Title</span>
+                        <button class="cursor-pointer text-muted hover:text-red-600" title="Delete task" @onclick="() => S.DeleteTask(t)">✕</button>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+}
+
+@code {
+    string title = "", filter = "all";
+    void OnKey(KeyboardEventArgs e) { if (e.Key == "Enter") Add(); }
+    void Add() { S.AddTask(title); title = ""; }
+}

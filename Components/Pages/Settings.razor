@@ -1,0 +1,55 @@
+@page "/settings"
+@inject AppState S
+@inject NavigationManager Nav
+
+@if (S.User != null)
+{
+    <h1 class="text-[26px]">Settings</h1>
+    <p class="muted">Manage your account and timer preferences</p>
+
+    <div class="mt-5 flex max-w-[520px] flex-col gap-4">
+        <div class="card">
+            <div class="card-head"><span>Account</span></div>
+            <label class="label !mt-0">Full name</label>
+            <input class="field" @bind="name" />
+            <label class="label">Daily study goal (minutes)</label>
+            <input class="field" type="number" @bind="goal" />
+            <label class="label">Timer lengths (focus / short break / long break)</label>
+            <div class="grid grid-cols-3 gap-2">
+                <input class="field" type="number" @bind="focus" />
+                <input class="field" type="number" @bind="shortBreak" />
+                <input class="field" type="number" @bind="longBreak" />
+            </div>
+            <button class="btn btn-primary btn-sm mt-4" @onclick="Save">Save changes</button>
+            @if (saved) { <span class="ml-3 text-xs text-green-600">Saved ✓</span> }
+        </div>
+
+        <div class="card">
+            <div class="card-head"><span>Data</span></div>
+            <p class="muted mb-3">Everything is stored in this browser only.</p>
+            <button class="btn btn-danger btn-sm" @onclick="S.ClearStudyData">Reset study history</button>
+            <button class="btn btn-danger btn-sm ml-2" @onclick="Delete">Delete account</button>
+        </div>
+    </div>
+}
+
+@code {
+    string name = ""; int goal, focus, shortBreak, longBreak; bool saved;
+
+    protected override void OnInitialized()
+    {
+        if (S.User == null) return;
+        name = S.User.Name; goal = S.User.DailyGoal;
+        (focus, shortBreak, longBreak) = (S.Minutes[0], S.Minutes[1], S.Minutes[2]);
+    }
+
+    void Save()
+    {
+        if (!string.IsNullOrWhiteSpace(name)) S.User!.Name = name.Trim();
+        S.User!.DailyGoal = Math.Clamp(goal, 10, 600);
+        S.SetMinutes(0, focus); S.SetMinutes(1, shortBreak); S.SetMinutes(2, longBreak);
+        S.Save(); saved = true;
+    }
+
+    void Delete() { S.DeleteAccount(); Nav.NavigateTo("login"); }
+}
